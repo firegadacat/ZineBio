@@ -34,6 +34,13 @@
             --font-heading: 'Outfit', sans-serif;
             --font-body: 'Lora', Georgia, serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Default Syntax Highlight Colors (Light Theme Style) */
+            --syntax-keyword: #cf222e;
+            --syntax-string: #0a3069;
+            --syntax-comment: #6e7781;
+            --syntax-number: #0550ae;
+            --syntax-built-in: #953800;
         }
 
         :where(body[data-theme="dark-terminal"]) {
@@ -49,6 +56,13 @@
             --font-heading: 'Fira Code', monospace;
             --font-body: 'Fira Code', monospace;
             --font-mono: 'Fira Code', monospace;
+
+            /* Dark Syntax Highlights */
+            --syntax-keyword: #ff79c6;
+            --syntax-string: #f1fa8c;
+            --syntax-comment: #6272a4;
+            --syntax-number: #bd93f9;
+            --syntax-built-in: #8be9fd;
         }
 
         :where(body[data-theme="warm-paper"]) {
@@ -64,6 +78,13 @@
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Crimson Pro', serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Warm Syntax Highlights */
+            --syntax-keyword: #b83b1d;
+            --syntax-string: #2d6a4f;
+            --syntax-comment: #8d7a68;
+            --syntax-number: #1b4332;
+            --syntax-built-in: #d97706;
         }
 
         :where(body[data-theme="bold-editorial"]) {
@@ -79,6 +100,13 @@
             --font-heading: 'Syne', sans-serif;
             --font-body: 'Space Grotesk', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Editorial Syntax Highlights */
+            --syntax-keyword: #f43f5e;
+            --syntax-string: #0d9488;
+            --syntax-comment: #64748b;
+            --syntax-number: #d97706;
+            --syntax-built-in: #4f46e5;
         }
 
         :where(body[data-theme="soft-pastel"]) {
@@ -94,6 +122,13 @@
             --font-heading: 'Fredoka', sans-serif;
             --font-body: 'Quicksand', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Soft Syntax Highlights */
+            --syntax-keyword: #d946ef;
+            --syntax-string: #0ea5e9;
+            --syntax-comment: #8b5cf6;
+            --syntax-number: #f43f5e;
+            --syntax-built-in: #10b981;
         }
 
         /* ==========================================================================
@@ -752,6 +787,19 @@
             font-size: 0.85rem;
         }
 
+        .bio-content pre code.hljs {
+            color: inherit;
+            background: transparent;
+            padding: 0;
+        }
+
+        /* Dynamic, Theme-Aware Highlight.js overrides */
+        .hljs-keyword, .hljs-selector-tag, .hljs-meta { color: var(--syntax-keyword); font-weight: 600; }
+        .hljs-string, .hljs-regexp, .hljs-addition { color: var(--syntax-string); }
+        .hljs-comment, .hljs-quote { color: var(--syntax-comment); font-style: italic; }
+        .hljs-number, .hljs-literal, .hljs-variable { color: var(--syntax-number); }
+        .hljs-built_in, .hljs-title, .hljs-section, .hljs-class, .hljs-type, .hljs-attr { color: var(--syntax-built-in); }
+
         .bio-content ul, 
         .bio-content ol {
             padding-left: 1.75rem;
@@ -1231,6 +1279,12 @@
                         </svg>
                         Custom CSS
                     </button>
+                    <button class="tab-btn" data-tab="js-tab">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Custom JS
+                    </button>
                 </nav>
 
                 <!-- Tabs Content area -->
@@ -1309,6 +1363,26 @@
                                 <div>1</div>
                             </div>
                             <textarea id="css-editor" class="css-textarea" spellcheck="false" placeholder="/* Write custom CSS here */" aria-label="Custom CSS style editor"></textarea>
+                        </div>
+                    </div>
+                    <!-- TAB 3: JS CUSTOMIZER -->
+                    <div class="tab-pane" id="js-tab">
+                        <!-- Custom JS controls banner -->
+                        <div class="css-controls-bar">
+                            <div class="css-select-wrapper">
+                                <span style="color: #e2a03f; font-weight: 600; font-size: 0.75rem; display: flex; align-items: center; gap: 0.3rem;">
+                                    ⚠️ Custom JS executes in the preview panel & exports with your page.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Line Styled Code Editor Layout -->
+                        <div class="css-editor-wrapper">
+                            <!-- Background scrolling line numbers -->
+                            <div class="line-numbers" id="js-line-numbers">
+                                <div>1</div>
+                            </div>
+                            <textarea id="js-editor" class="css-textarea" spellcheck="false" placeholder="/* Write custom JavaScript here */" aria-label="Custom JS script editor"></textarea>
                         </div>
                     </div>
 
@@ -1423,6 +1497,17 @@ Updated: May 2026
 
 `;
 
+        const defaultJsComment = `/*
+  === CUSTOM JAVASCRIPT ===
+  Write custom JavaScript here. It will execute in the live preview and
+  be bundled in the exported standalone HTML bio page.
+
+  Example:
+  console.log("Custom JS running!");
+*/
+
+`;
+
         // DOM Nodes selection
         const textarea = document.getElementById('markdown-editor');
         const cssTextarea = document.getElementById('css-editor');
@@ -1437,6 +1522,8 @@ Updated: May 2026
         const lineNumbers = document.getElementById('css-line-numbers');
         const cssSnippetSelector = document.getElementById('css-snippets');
         const resetCssBtn = document.getElementById('reset-css-btn');
+        const jsTextarea = document.getElementById('js-editor');
+        const jsLineNumbers = document.getElementById('js-line-numbers');
         
         // Setup marked library config
         marked.setOptions({
@@ -1472,6 +1559,9 @@ Updated: May 2026
                 if (tab.getAttribute('data-tab') === 'css-tab') {
                     updateLineNumbers();
                     lineNumbers.scrollTop = cssTextarea.scrollTop;
+                } else if (tab.getAttribute('data-tab') === 'js-tab') {
+                    updateJsLineNumbers();
+                    jsLineNumbers.scrollTop = jsTextarea.scrollTop;
                 }
             });
         });
@@ -1517,14 +1607,30 @@ Updated: May 2026
                     if (code) {
                         if (typeof hljs !== 'undefined') {
                             try {
-                                hljs.highlightElement(code);
+                                const langClass = Array.from(code.classList).find(c => c.startsWith('language-'));
+                                const lang = langClass ? langClass.replace('language-', '') : null;
+                                
+                                if (lang) {
+                                    const highlightResult = hljs.highlight(code.textContent, { language: lang, ignoreIllegals: true });
+                                    code.innerHTML = highlightResult.value;
+                                    code.classList.add('hljs');
+                                } else {
+                                    const highlightResult = hljs.highlightAuto(code.textContent);
+                                    code.innerHTML = highlightResult.value;
+                                    code.classList.add('hljs');
+                                }
                             } catch (e) {
-                                console.warn("hljs highlightElement failed: ", e);
+                                console.warn("hljs direct highlight failed, falling back: ", e);
+                                try {
+                                    hljs.highlightElement(code);
+                                } catch (err) {}
                             }
                         }
                         addCopyButtonToPre(pre, code);
                     }
                 });
+
+                updateInjectedJS();
             } catch (err) {
                 console.error("Markdown parsing failed: ", err);
             }
@@ -1993,6 +2099,40 @@ Updated: May 2026
             lineNumbers.scrollTop = cssTextarea.scrollTop;
         });
 
+        // ── JS EDITOR (LIVE INJECTION & LINE NUMBERS SYNC) ─────────────────
+        function updateInjectedJS() {
+            const oldScript = document.getElementById('injected-user-js');
+            if (oldScript) oldScript.remove();
+
+            const jsCode = jsTextarea.value.trim();
+            if (!jsCode) return;
+
+            const newScript = document.createElement('script');
+            newScript.id = 'injected-user-js';
+            newScript.textContent = `
+                try {
+                    ${jsCode}
+                } catch (e) {
+                    console.error("Custom JS Error:", e);
+                }
+            `;
+            document.body.appendChild(newScript);
+        }
+
+        function updateJsLineNumbers() {
+            const lines = jsTextarea.value.split('\n');
+            const count = Math.max(1, lines.length);
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                html += `<div>${i}</div>`;
+            }
+            jsLineNumbers.innerHTML = html;
+        }
+
+        jsTextarea.addEventListener('scroll', () => {
+            jsLineNumbers.scrollTop = jsTextarea.scrollTop;
+        });
+
         // CSS Preset Insert selector click
         cssSnippetSelector.addEventListener('change', () => {
             const val = cssSnippetSelector.value;
@@ -2144,6 +2284,7 @@ Updated: May 2026
         function saveToLocalStorage() {
             localStorage.setItem('bio-markdown', textarea.value);
             localStorage.setItem('bio-css', cssTextarea.value);
+            localStorage.setItem('bio-js', jsTextarea.value);
             localStorage.setItem('bio-theme', themeSwitcher.value);
             localStorage.setItem('bio-sidebar-collapsed', sectionSidebar.classList.contains('collapsed') ? 'true' : 'false');
         }
@@ -2174,6 +2315,17 @@ Updated: May 2026
         cssTextarea.addEventListener('input', () => {
             updateInjectedCSS();
             updateLineNumbers();
+            
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                saveToLocalStorage();
+                showToast("Saved ✓");
+            }, 500);
+        });
+
+        jsTextarea.addEventListener('input', () => {
+            updateInjectedJS();
+            updateJsLineNumbers();
             
             if (debounceTimer) clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
@@ -2295,11 +2447,13 @@ Updated: May 2026
         function loadSavedState() {
             const storedMd = localStorage.getItem('bio-markdown');
             const storedCss = localStorage.getItem('bio-css');
+            const storedJs = localStorage.getItem('bio-js');
             const storedTheme = localStorage.getItem('bio-theme');
             const storedSidebar = localStorage.getItem('bio-sidebar-collapsed');
 
             textarea.value = (storedMd !== null) ? storedMd : defaultMarkdownTemplate;
             cssTextarea.value = (storedCss !== null) ? storedCss : defaultCssComment;
+            jsTextarea.value = (storedJs !== null) ? storedJs : defaultJsComment;
             
             if (storedTheme) {
                 themeSwitcher.value = storedTheme;
@@ -2325,6 +2479,8 @@ Updated: May 2026
             renderSectionManager();
             updateInjectedCSS();
             updateLineNumbers();
+            updateInjectedJS();
+            updateJsLineNumbers();
         }
 
         /* ==========================================================================
@@ -2352,6 +2508,14 @@ Updated: May 2026
             const mdText = textarea.value;
             const customCSS = cssTextarea.value;
             const activeTheme = themeSwitcher.value;
+            const customJS = jsTextarea.value;
+            
+            // Escape custom JS so it is safe inside template literal backticks
+            const escapedJS = customJS
+                .replace(/\\/g, '\\\\')
+                .replace(/`/g, '\\`')
+                .replace(/\${/g, '\\${')
+                .replace(/<\/script>/g, '<\\/script>');
             
             // Build bio DOM
             const rawHtml = marked.parse(mdText);
@@ -2391,6 +2555,13 @@ Updated: May 2026
             --font-heading: 'Outfit', sans-serif;
             --font-body: 'Lora', Georgia, serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Default Syntax Highlight Colors (Light Theme Style) */
+            --syntax-keyword: #cf222e;
+            --syntax-string: #0a3069;
+            --syntax-comment: #6e7781;
+            --syntax-number: #0550ae;
+            --syntax-built-in: #953800;
         }
 
         :where([data-theme="dark-terminal"]) {
@@ -2406,6 +2577,13 @@ Updated: May 2026
             --font-heading: 'Fira Code', monospace;
             --font-body: 'Fira Code', monospace;
             --font-mono: 'Fira Code', monospace;
+
+            /* Dark Syntax Highlights */
+            --syntax-keyword: #ff79c6;
+            --syntax-string: #f1fa8c;
+            --syntax-comment: #6272a4;
+            --syntax-number: #bd93f9;
+            --syntax-built-in: #8be9fd;
         }
 
         :where([data-theme="warm-paper"]) {
@@ -2421,6 +2599,13 @@ Updated: May 2026
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Crimson Pro', serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Warm Syntax Highlights */
+            --syntax-keyword: #b83b1d;
+            --syntax-string: #2d6a4f;
+            --syntax-comment: #8d7a68;
+            --syntax-number: #1b4332;
+            --syntax-built-in: #d97706;
         }
 
         :where([data-theme="bold-editorial"]) {
@@ -2436,6 +2621,13 @@ Updated: May 2026
             --font-heading: 'Syne', sans-serif;
             --font-body: 'Space Grotesk', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Editorial Syntax Highlights */
+            --syntax-keyword: #f43f5e;
+            --syntax-string: #0d9488;
+            --syntax-comment: #64748b;
+            --syntax-number: #d97706;
+            --syntax-built-in: #4f46e5;
         }
 
         :where([data-theme="soft-pastel"]) {
@@ -2451,6 +2643,13 @@ Updated: May 2026
             --font-heading: 'Fredoka', sans-serif;
             --font-body: 'Quicksand', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Soft Syntax Highlights */
+            --syntax-keyword: #d946ef;
+            --syntax-string: #0ea5e9;
+            --syntax-comment: #8b5cf6;
+            --syntax-number: #f43f5e;
+            --syntax-built-in: #10b981;
         }
 
         /* Typography spacing & scales inside Bio */
@@ -2606,6 +2805,19 @@ Updated: May 2026
             font-size: 0.85rem;
         }
 
+        .bio-content pre code.hljs {
+            color: inherit;
+            background: transparent;
+            padding: 0;
+        }
+
+        /* Dynamic, Theme-Aware Highlight.js overrides */
+        .hljs-keyword, .hljs-selector-tag, .hljs-meta { color: var(--syntax-keyword); font-weight: 600; }
+        .hljs-string, .hljs-regexp, .hljs-addition { color: var(--syntax-string); }
+        .hljs-comment, .hljs-quote { color: var(--syntax-comment); font-style: italic; }
+        .hljs-number, .hljs-literal, .hljs-variable { color: var(--syntax-number); }
+        .hljs-built_in, .hljs-title, .hljs-section, .hljs-class, .hljs-type, .hljs-attr { color: var(--syntax-built-in); }
+
         .bio-content ul, 
         .bio-content ol {
             padding-left: 1.75rem;
@@ -2679,9 +2891,23 @@ Updated: May 2026
                 if (code) {
                     if (typeof hljs !== 'undefined') {
                         try {
-                            hljs.highlightElement(code);
+                            const langClass = Array.from(code.classList).find(c => c.startsWith('language-'));
+                            const lang = langClass ? langClass.replace('language-', '') : null;
+                            
+                            if (lang) {
+                                const highlightResult = hljs.highlight(code.textContent, { language: lang, ignoreIllegals: true });
+                                code.innerHTML = highlightResult.value;
+                                code.classList.add('hljs');
+                            } else {
+                                const highlightResult = hljs.highlightAuto(code.textContent);
+                                code.innerHTML = highlightResult.value;
+                                code.classList.add('hljs');
+                            }
                         } catch (e) {
-                            console.warn("hljs highlightElement failed: ", e);
+                            console.warn("hljs direct highlight failed, falling back: ", e);
+                            try {
+                                hljs.highlightElement(code);
+                            } catch (err) {}
                         }
                     }
                     addCopyButtonToPre(pre, code);
@@ -2719,6 +2945,11 @@ Updated: May 2026
                 wrapper.appendChild(btn);
             }
         });
+    <\/script>
+    
+    <!-- Custom User JavaScript -->
+    <script>
+        ${escapedJS}
     <\/script>
 </body>
 </html>`;
