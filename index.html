@@ -1,0 +1,2672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZineBio — Dynamic Markdown Personal Bio Creator</title>
+    <!-- Google Fonts API -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300..900;1,300..900&family=Fira+Code:wght@300..700&family=Fredoka:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Quicksand:wght@300..700&family=Space+Grotesk:wght@300..700&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js for Code Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+    
+    <!-- Marked.js for Markdown Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    
+    <style>
+        /* ==========================================================================
+           1. CSS THEME VARIABLES
+           ========================================================================== */
+        :root {
+            /* Default Clean Light Theme Variables */
+            --bg-color: #fdfdfb;
+            --bg-texture: radial-gradient(#e2e2d9 1.5px, transparent 1.5px);
+            --bg-size: 24px 24px;
+            --text-color: #2e2e2c;
+            --heading-color: #121211;
+            --accent-color: #3d5a45;
+            --accent-rgb: 61, 90, 69;
+            --border-color: #e5e5da;
+            --card-bg: #ffffff;
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Lora', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        :where(body[data-theme="dark-terminal"]) {
+            --bg-color: #0d0f14;
+            --bg-texture: radial-gradient(#1f2937 1px, transparent 1px);
+            --bg-size: 24px 24px;
+            --text-color: #34d399; /* Soft Emerald */
+            --heading-color: #10b981;
+            --accent-color: #059669;
+            --accent-rgb: 5, 150, 105;
+            --border-color: #064e3b;
+            --card-bg: #111827;
+            --font-heading: 'Fira Code', monospace;
+            --font-body: 'Fira Code', monospace;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        :where(body[data-theme="warm-paper"]) {
+            --bg-color: #faf5ed;
+            --bg-texture: linear-gradient(rgba(224, 212, 191, 0.4) 1px, transparent 1px);
+            --bg-size: 100% 28px;
+            --text-color: #443224;
+            --heading-color: #2b1f1a;
+            --accent-color: #c84b31;
+            --accent-rgb: 200, 75, 49;
+            --border-color: #e3d2bd;
+            --card-bg: #fcfaf7;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        :where(body[data-theme="bold-editorial"]) {
+            --bg-color: #ffffff;
+            --bg-texture: linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            --bg-size: 40px 100%;
+            --text-color: #111111;
+            --heading-color: #000000;
+            --accent-color: #f43f5e; /* Vibrant Rose */
+            --accent-rgb: 244, 63, 94;
+            --border-color: #000000;
+            --card-bg: #ffffff;
+            --font-heading: 'Syne', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        :where(body[data-theme="soft-pastel"]) {
+            --bg-color: #faf6fc;
+            --bg-texture: radial-gradient(circle, #ecdff7 15%, transparent 16%);
+            --bg-size: 20px 20px;
+            --text-color: #4a3e56;
+            --heading-color: #2a1b35;
+            --accent-color: #9f5fbf; /* Lilac Purple */
+            --accent-rgb: 159, 95, 191;
+            --border-color: #ebd7f5;
+            --card-bg: #ffffff;
+            --font-heading: 'Fredoka', sans-serif;
+            --font-body: 'Quicksand', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        /* ==========================================================================
+           2. RESET & BASE APP UI STYLING
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            transition: background-color 0.3s;
+        }
+
+        /* App UI Shell */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --ui-bg: #0f131a;
+            --ui-panel-bg: #161b22;
+            --ui-text: #f0f3f6;
+            --ui-text-muted: #8b949e;
+            --ui-border: #21262d;
+            --ui-accent: #2f81f7;
+            --ui-accent-hover: #58a6ff;
+            --toast-bg: rgba(13, 17, 23, 0.95);
+            --toast-color: #58a6ff;
+        }
+
+        /* App Header styling */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--ui-panel-bg);
+            border-bottom: 1px solid var(--ui-border);
+            color: var(--ui-text);
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-tag {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--ui-text-muted);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .app-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Buttons Styling */
+        .btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            border: 1px solid var(--ui-border);
+            padding: 0.45rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.825rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            user-select: none;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: var(--ui-accent);
+            border-color: transparent;
+        }
+
+        .btn-primary:hover {
+            background: var(--ui-accent-hover);
+        }
+
+        .theme-dropdown {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            border: 1px solid var(--ui-border);
+            padding: 0.45rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.825rem;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .theme-dropdown:focus {
+            border-color: var(--ui-accent);
+        }
+
+        .theme-dropdown option {
+            background-color: var(--ui-panel-bg);
+            color: #ffffff;
+        }
+
+        /* Workspace Grid */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: var(--ui-bg);
+        }
+
+        /* ==========================================================================
+           3. EDITOR PANEL & WORKSPACE
+           ========================================================================== */
+        .editor-panel {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            height: 100%;
+            background: var(--ui-panel-bg);
+            border-right: 1px solid var(--ui-border);
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Tabs styling */
+        .editor-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--ui-border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--ui-text-muted);
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid transparent;
+            user-select: none;
+        }
+
+        .tab-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--ui-accent);
+            border-bottom-color: var(--ui-accent);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tab-pane {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tab-pane.active {
+            display: flex;
+        }
+
+        /* Markdown Editor Sub-Layout */
+        .markdown-workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Toolbar insertion helpers */
+        .editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            padding: 0.4rem 0.6rem;
+            background: rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid var(--ui-border);
+            user-select: none;
+        }
+
+        .toolbar-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--ui-text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            background: var(--ui-border);
+            margin: 0.2rem 0.3rem;
+        }
+
+        /* Collapsible Section Manager Sidebar */
+        .section-sidebar {
+            width: 230px;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid var(--ui-border);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+        }
+
+        .section-sidebar.collapsed {
+            width: 0;
+            border-right: none;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0.75rem 0.5rem 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ui-text-muted);
+            user-select: none;
+        }
+
+        .sidebar-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .section-chip {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 0.45rem 0.6rem;
+            margin-bottom: 0.4rem;
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+            gap: 0.5rem;
+        }
+
+        .section-chip:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .section-chip.dragging {
+            opacity: 0.4;
+            cursor: grabbing;
+            background: rgba(255, 255, 255, 0.01);
+            border-style: dashed;
+        }
+
+        .section-chip.drag-over {
+            border-top: 2px solid var(--ui-accent);
+            background: rgba(47, 129, 247, 0.05);
+        }
+
+        .chip-drag-handle {
+            color: rgba(255, 255, 255, 0.25);
+            cursor: grab;
+            font-size: 0.75rem;
+        }
+
+        .chip-content {
+            flex: 1;
+            min-width: 0;
+            font-size: 0.8rem;
+        }
+
+        .chip-title {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f0f3f6;
+            cursor: pointer;
+        }
+
+        .chip-input {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid var(--ui-accent);
+            color: #ffffff;
+            border-radius: 4px;
+            padding: 0.15rem 0.35rem;
+            font-size: 0.8rem;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .chip-actions {
+            display: flex;
+            gap: 0.15rem;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .section-chip:hover .chip-actions {
+            opacity: 1;
+        }
+
+        .chip-btn {
+            background: transparent;
+            border: none;
+            color: var(--ui-text-muted);
+            cursor: pointer;
+            padding: 0.2rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chip-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .chip-btn.delete-btn:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        /* Markdown Textarea Workspace */
+        .editor-textarea-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        .editor-textarea {
+            flex: 1;
+            background: transparent;
+            color: #e2e8f0;
+            border: none;
+            outline: none;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            resize: none;
+            overflow-y: auto;
+        }
+
+        /* Custom CSS Editor sub-layout */
+        .css-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background: rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid var(--ui-border);
+            user-select: none;
+            gap: 1rem;
+        }
+
+        .css-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--ui-text-muted);
+            font-size: 0.75rem;
+        }
+
+        .css-preset-dropdown {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            border: 1px solid var(--ui-border);
+            padding: 0.35rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .css-preset-dropdown option {
+            background-color: var(--ui-panel-bg);
+            color: #ffffff;
+        }
+
+        .css-editor-wrapper {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            background: #0d1117;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .line-numbers {
+            width: 42px;
+            padding: 1.25rem 0;
+            background: #161b22;
+            color: #484f58;
+            text-align: right;
+            padding-right: 0.6rem;
+            user-select: none;
+            border-right: 1px solid #21262d;
+            overflow: hidden;
+        }
+
+        .line-numbers div {
+            height: 1.5em;
+        }
+
+        .css-textarea {
+            flex: 1;
+            background: transparent;
+            color: #c9d1d9;
+            border: none;
+            outline: none;
+            padding: 1.25rem 1rem;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            resize: none;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        /* ==========================================================================
+           4. LIVE PREVIEW PANEL (THE BIO RENDERING CONTAINER)
+           ========================================================================== */
+        .preview-panel {
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+            background-image: var(--bg-texture);
+            background-size: var(--bg-size);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Scoped Bio Content Container */
+        .bio-container {
+            max-width: 720px;
+            width: 100%;
+            padding: 4rem 2rem;
+            box-sizing: border-box;
+            transition: max-width 0.3s ease;
+        }
+
+        .bio-content {
+            font-family: var(--font-body);
+            color: var(--text-color);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Typography spacing & scales inside Bio */
+        .bio-content h1, 
+        .bio-content h2, 
+        .bio-content h3, 
+        .bio-content h4 {
+            font-family: var(--font-heading);
+            color: var(--heading-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        .bio-content h1 { font-size: 2.75rem; margin-top: 0; margin-bottom: 0.5rem; }
+        .bio-content h2 { font-size: 1.85rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 3rem; }
+        .bio-content h3 { font-size: 1.4rem; }
+        .bio-content h4 { font-size: 1.15rem; }
+
+        .bio-content a {
+            color: var(--accent-color);
+            text-decoration: none;
+            border-bottom: 1.5px solid rgba(var(--accent-rgb), 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .bio-content a:hover {
+            border-bottom-color: var(--accent-color);
+            background: rgba(var(--accent-rgb), 0.05);
+        }
+
+        .bio-content hr {
+            border: 0;
+            height: 1px;
+            background: var(--border-color);
+            margin: 2.5rem 0;
+        }
+
+        .bio-content blockquote {
+            border-left: 4px solid var(--accent-color);
+            padding: 0.25rem 0 0.25rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-color);
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .bio-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .bio-content th, 
+        .bio-content td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+
+        .bio-content th {
+            background-color: rgba(var(--accent-rgb), 0.04);
+            font-weight: 600;
+        }
+
+        .code-block-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .bio-content pre {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            user-select: none;
+            line-height: 1;
+            z-index: 10;
+        }
+
+        .code-block-wrapper:hover .code-copy-btn {
+            opacity: 0.85;
+        }
+
+        .code-copy-btn:hover {
+            opacity: 1 !important;
+            background: var(--border-color);
+        }
+
+        .code-copy-btn.copied {
+            background: rgba(var(--accent-rgb), 0.1);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .bio-content code {
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            background: rgba(var(--accent-rgb), 0.08);
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+        }
+
+        .bio-content pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85rem;
+        }
+
+        .bio-content ul, 
+        .bio-content ol {
+            padding-left: 1.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .bio-content li {
+            margin-bottom: 0.6rem;
+        }
+
+        .bio-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        /* Default HTML badge styling */
+        .badge {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.825rem;
+            font-family: var(--font-mono);
+            display: inline-block;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+
+        /* ==========================================================================
+           5. SYSTEM PERSISTENT PILLS & TOASTS
+           ========================================================================== */
+        /* Mode Switch Button */
+        .mode-toggle-pill {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--ui-bg);
+            color: #ffffff;
+            border: 1px solid var(--ui-border);
+            padding: 0.65rem 1.25rem;
+            border-radius: 50px;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            user-select: none;
+        }
+
+        .mode-toggle-pill:hover {
+            transform: translateY(-2px);
+            background: #1c212a;
+            border-color: rgba(255,255,255,0.25);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+        }
+
+        .mode-toggle-pill svg {
+            display: block;
+        }
+
+        /* Saved Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: var(--toast-bg);
+            color: var(--toast-color);
+            border: 1px solid var(--ui-border);
+            padding: 0.55rem 1.1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           6. VIEW MODE INTERACTIVE SHIFT
+           ========================================================================== */
+        .app-container.mode-view .app-header {
+            display: none;
+        }
+
+        .app-container.mode-view .editor-panel {
+            width: 0% !important;
+            opacity: 0;
+            pointer-events: none;
+            border-right: none;
+        }
+
+        .app-container.mode-view .preview-panel {
+            flex: 0 0 100%;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        /* ==========================================================================
+           7. MEDIA QUERIES (MOBILE RESPONSIVE STACKING)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            .workspace {
+                flex-direction: column;
+            }
+
+            .editor-panel {
+                width: 100% !important;
+                height: 50%;
+                border-right: none;
+                border-bottom: 1px solid var(--ui-border);
+                transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+            }
+
+            .preview-panel {
+                height: 50%;
+            }
+
+            .app-container.mode-view .editor-panel {
+                height: 0% !important;
+                opacity: 0;
+            }
+
+            .app-container.mode-view .preview-panel {
+                height: 100%;
+            }
+
+            /* Scrollable mobile toolbar */
+            .editor-toolbar {
+                overflow-x: auto;
+                white-space: nowrap;
+                flex-wrap: nowrap;
+                scrollbar-width: none;
+            }
+
+            .editor-toolbar::-webkit-scrollbar {
+                display: none;
+            }
+
+            .app-controls {
+                gap: 0.4rem;
+            }
+
+            .btn span {
+                display: none; /* Hide button text on mobile, icons only */
+            }
+
+            .theme-dropdown {
+                padding: 0.45rem 0.45rem;
+                max-width: 110px;
+                font-size: 0.75rem;
+            }
+
+            .toast, .mode-toggle-pill {
+                bottom: 1rem;
+                left: 1rem;
+            }
+            .mode-toggle-pill {
+                right: 1rem;
+                left: auto;
+                padding: 0.5rem 1rem;
+            }
+        }
+    </style>
+    <!-- Live User Applied Custom CSS Anchor -->
+    <style id="user-css"></style>
+    <style>
+        /* Custom Theme Picker Bar */
+        #custom-theme-bar {
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.45rem 1.5rem;
+            background: var(--ui-panel-bg);
+            border-bottom: 1px solid var(--ui-border);
+            font-size: 0.78rem;
+            color: var(--ui-text-muted);
+            flex-wrap: wrap;
+            animation: slideDown 0.18s ease;
+        }
+        #custom-theme-bar.visible {
+            display: flex;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .custom-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .custom-picker-group label {
+            font-size: 0.75rem;
+            color: var(--ui-text-muted);
+            white-space: nowrap;
+        }
+        .custom-picker-group input[type="color"] {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--ui-border);
+            border-radius: 6px;
+            padding: 2px;
+            background: rgba(255,255,255,0.06);
+            cursor: pointer;
+        }
+        .custom-picker-divider {
+            width: 1px;
+            height: 1.2rem;
+            background: var(--ui-border);
+            margin: 0 0.2rem;
+        }
+        #reset-custom-theme-btn {
+            font-size: 0.72rem;
+            padding: 0.25rem 0.55rem;
+            opacity: 0.7;
+        }
+        #reset-custom-theme-btn:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Theme Picker Bar (shown when Custom theme is active) -->
+    <div id="custom-theme-bar" role="region" aria-label="Custom Theme Colors">
+        <span>🎨 Custom Theme:</span>
+        <div class="custom-picker-group">
+            <label for="custom-bg-color">Background</label>
+            <input type="color" id="custom-bg-color" value="#fdfdfb" title="Background color">
+        </div>
+        <div class="custom-picker-divider"></div>
+        <div class="custom-picker-group">
+            <label for="custom-text-color">Text</label>
+            <input type="color" id="custom-text-color" value="#2e2e2c" title="Body text color">
+        </div>
+        <div class="custom-picker-divider"></div>
+        <div class="custom-picker-group">
+            <label for="custom-heading-color">Headings</label>
+            <input type="color" id="custom-heading-color" value="#121211" title="Heading color">
+        </div>
+        <div class="custom-picker-divider"></div>
+        <div class="custom-picker-group">
+            <label for="custom-accent-color">Accent</label>
+            <input type="color" id="custom-accent-color" value="#3d5a45" title="Accent / link color">
+        </div>
+        <div class="custom-picker-divider"></div>
+        <div class="custom-picker-group">
+            <label for="custom-card-bg">Card BG</label>
+            <input type="color" id="custom-card-bg" value="#ffffff" title="Card / code block background">
+        </div>
+        <div class="custom-picker-divider"></div>
+        <button class="btn" id="reset-custom-theme-btn" title="Reset custom colors to defaults">↺ Reset</button>
+    </div>
+
+    <div id="app-container" class="app-container mode-edit">
+        
+        <!-- App Header Bar -->
+        <header class="app-header">
+            <div class="logo-section">
+                <div class="logo-text">
+                    ZineBio
+                    <span class="logo-tag">Markdown Creator</span>
+                </div>
+            </div>
+            
+            <div class="app-controls">
+                <!-- Theme Switcher dropdown -->
+                <select id="theme-switcher" class="theme-dropdown" aria-label="Base Theme">
+                    <option value="default">✨ Default Light</option>
+                    <option value="dark-terminal">📟 Dark Terminal</option>
+                    <option value="warm-paper">📜 Warm Paper</option>
+                    <option value="bold-editorial">📰 Bold Editorial</option>
+                    <option value="soft-pastel">🌸 Soft Pastel</option>
+                    <option value="custom">🎨 Custom...</option>
+                </select>
+
+                <div class="toolbar-divider" style="height: 1.5rem; background: var(--ui-border);"></div>
+                
+                <!-- Import markdown file triggers hidden input click -->
+                <button class="btn" id="import-btn" title="Import markdown (.md) file">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <span>Import</span>
+                </button>
+                <input type="file" id="import-input" accept=".md" style="display: none;">
+
+                <button class="btn" id="copy-btn" title="Copy markdown content to clipboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    <span>Copy</span>
+                </button>
+
+                <button class="btn" id="export-md-btn" title="Download raw markdown (.md)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>.md</span>
+                </button>
+
+                <button class="btn btn-primary" id="export-html-btn" title="Download pure, beautifully styled static HTML bio">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                    <span>Export HTML</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main workspace grid -->
+        <main class="workspace">
+            
+            <!-- Left panel: Editors and tools -->
+            <div class="editor-panel" id="editor-panel">
+                <!-- Panel Tabs -->
+                <nav class="editor-tabs">
+                    <button class="tab-btn active" data-tab="markdown-tab">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Markdown Editor
+                    </button>
+                    <button class="tab-btn" data-tab="css-tab">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        Custom CSS
+                    </button>
+                </nav>
+
+                <!-- Tabs Content area -->
+                <div class="tab-content">
+                    
+                    <!-- TAB 1: MARKDOWN WRITER -->
+                    <div class="tab-pane active" id="markdown-tab">
+                        
+                        <!-- Toolbar for quick snippets -->
+                        <div class="editor-toolbar">
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('section')" title="Insert new Section heading">+ Section</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('table')" title="Insert 3-column, 3-row Markdown table">+ Table</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('image')" title="Insert Image">+ Image</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('link')" title="Insert Link">+ Link</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('code')" title="Insert Block code syntax">+ Code Block</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('quote')" title="Insert Blockquote">+ Quote</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('divider')" title="Insert Divider HR">+ Divider</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('badge')" title="Insert inline badge tag">+ Badge</button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('bold')" style="font-weight: 700;" title="Bold selected text">Bold</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('italic')" style="font-style: italic;" title="Italic selected text">Italic</button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" id="sidebar-toggle" title="Toggle Section Manager list" style="background: rgba(47, 129, 247, 0.15); color: var(--ui-accent);">
+                                Sections ☰
+                            </button>
+                        </div>
+
+                        <!-- Inner Markdown Workspace (Sections Manager + Textarea) -->
+                        <div class="markdown-workspace">
+                            
+                            <!-- Draggable Section Sidebar Drawer -->
+                            <aside class="section-sidebar" id="section-sidebar">
+                                <div class="sidebar-header">
+                                    <span>Sections (h2)</span>
+                                    <button class="chip-btn" id="sidebar-close-btn" title="Close section manager">✕</button>
+                                </div>
+                                <div class="sidebar-list" id="section-manager-list">
+                                    <!-- Chips rendered dynamically in JS -->
+                                </div>
+                            </aside>
+
+                            <!-- The Editor Input text -->
+                            <div class="editor-textarea-wrapper">
+                                <textarea id="markdown-editor" class="editor-textarea" placeholder="Start typing your markdown..." aria-label="Markdown text editor"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 2: CSS CUSTOMIZER -->
+                    <div class="tab-pane" id="css-tab">
+                        <!-- Custom CSS toolbar -->
+                        <div class="css-controls-bar">
+                            <div class="css-select-wrapper">
+                                <span>CSS Snippets:</span>
+                                <select id="css-snippets" class="css-preset-dropdown" aria-label="Insert CSS Snippet Preset">
+                                    <option value="" selected>Choose a snippet to append...</option>
+                                    <option value="dark-mode">🌓 Media Dark Mode Override</option>
+                                    <option value="accent-color">🎨 Accent color override</option>
+                                    <option value="custom-font">🔤 Google Fonts @import (Cinzel/Montserrat)</option>
+                                    <option value="centered-layout">📏 Centered narrow layout (600px)</option>
+                                    <option value="card-sections">📦 Card-style sections (with hover shadows)</option>
+                                    <option value="colorful-badges">🏷️ Sleek gradient pill badges</option>
+                                    <option value="spoiler-text">🫣 Spoiler text (hover to reveal)</option>
+                                </select>
+                            </div>
+                            <button class="btn" id="reset-css-btn" title="Restore CSS editor to default selectors list" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                                Reset CSS
+                            </button>
+                        </div>
+
+                        <!-- Line Styled Code Editor Layout -->
+                        <div class="css-editor-wrapper">
+                            <!-- Background scrolling line numbers -->
+                            <div class="line-numbers" id="css-line-numbers">
+                                <div>1</div>
+                            </div>
+                            <textarea id="css-editor" class="css-textarea" spellcheck="false" placeholder="/* Write custom CSS here */" aria-label="Custom CSS style editor"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right panel: Rendered HTML output -->
+            <div class="preview-panel" id="preview-panel">
+                <div class="bio-container">
+                    <article class="bio-content" id="preview-content">
+                        <!-- Rendered HTML output goes here -->
+                    </article>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Fixed VIEW / EDIT Pill -->
+        <button id="mode-toggle-btn" class="mode-toggle-pill" aria-label="Toggle view and edit modes">
+            <span class="mode-toggle-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                </svg>
+            </span>
+            <span class="mode-toggle-text">View Bio</span>
+        </button>
+
+        <!-- Auto-save notification toast -->
+        <div class="toast" id="toast">
+            <span class="toast-icon">✓</span>
+            <span class="toast-text">Saved</span>
+        </div>
+
+    </div>
+
+    <!-- ==========================================================================
+       8. APPLICATION JAVASCRIPT SYSTEM
+       ========================================================================== -->
+    <script>
+        // Default Prefilled Templates
+        const defaultMarkdownTemplate = `# Your Name
+
+**Designer · Developer · Human**
+
+---
+
+## About
+
+Write something true about yourself here. Keep it short and honest.
+What do you make? What do you care about?
+
+## Skills
+
+| Area | Tools | Level |
+|------|-------|-------|
+| Frontend | HTML, CSS, JS | ★★★★☆ |
+| Design | Figma, Illustrator | ★★★☆☆ |
+| Backend | Node, Python | ★★☆☆☆ |
+
+## Projects
+
+- **Project One** — Short description. [View →](https://example.com)
+- **Project Two** — Short description. [View →](https://example.com)
+
+## Links
+
+- [GitHub](https://github.com)
+- [Twitter / X](https://x.com)
+- [Email](mailto:you@example.com)
+
+## Now
+
+What are you working on right now? Where are you?
+Updated: May 2026
+
+---
+
+*Made with a single HTML file.*
+`;
+
+        const defaultCssComment = `/*
+  === COMMON SELECTORS ===
+  body {
+    /* Style bio page base body */
+  }
+  h1, h2, h3 {
+    /* Headings adjustments */
+  }
+  a {
+    /* Customize hyperlinks */
+  }
+  .bio-content {
+    /* Modify main text wrapper */
+  }
+  .badge {
+    /* Style inline HTML badges */
+  }
+  table {
+    /* Modify skills table */
+  }
+  blockquote {
+    /* Block quotes typography */
+  }
+  code, pre {
+    /* Code elements */
+  }
+  .section {
+    /* Individual card blocks starting with ## */
+  }
+*/
+
+`;
+
+        // DOM Nodes selection
+        const textarea = document.getElementById('markdown-editor');
+        const cssTextarea = document.getElementById('css-editor');
+        const previewContent = document.getElementById('preview-content');
+        const styleTag = document.getElementById('user-css');
+        const themeSwitcher = document.getElementById('theme-switcher');
+        const appContainer = document.getElementById('app-container');
+        const modeToggleBtn = document.getElementById('mode-toggle-btn');
+        const sectionSidebar = document.getElementById('section-sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+        const lineNumbers = document.getElementById('css-line-numbers');
+        const cssSnippetSelector = document.getElementById('css-snippets');
+        const resetCssBtn = document.getElementById('reset-css-btn');
+        
+        // Setup marked library config
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
+
+        // Emojis mapping for view/edit toggle pill
+        const eyeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/></svg>`;
+        const pencilIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/></svg>`;
+
+        // Drag source state
+        let dragSourceIndex = null;
+        let debounceTimer = null;
+        let toastTimeout = null;
+
+        /* ==========================================================================
+           TAB CONTROL LOGIC
+           ========================================================================== */
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Deactivate current active tab
+                document.querySelector('.tab-btn.active').classList.remove('active');
+                document.querySelector('.tab-pane.active').classList.remove('active');
+                
+                // Activate clicked tab
+                tab.classList.add('active');
+                const targetPane = document.getElementById(tab.getAttribute('data-tab'));
+                targetPane.classList.add('active');
+                
+                // Keep CSS editor line numbers in sync if CSS tab is opened
+                if (tab.getAttribute('data-tab') === 'css-tab') {
+                    updateLineNumbers();
+                    lineNumbers.scrollTop = cssTextarea.scrollTop;
+                }
+            });
+        });
+
+        /* ==========================================================================
+           MARKDOWN RENDERER & DOCUMENT STRUCTURER
+           ========================================================================== */
+        // Safe clipboard copy supporting file:// protocol contexts
+        function copyTextToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            }
+            return new Promise((resolve, reject) => {
+                try {
+                    const el = document.createElement('textarea');
+                    el.value = text;
+                    el.style.position = 'fixed';
+                    el.style.opacity = '0';
+                    document.body.appendChild(el);
+                    el.select();
+                    const success = document.execCommand('copy');
+                    document.body.removeChild(el);
+                    if (success) resolve();
+                    else reject(new Error('Copy action failed'));
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+
+        function updatePreview() {
+            try {
+                const markdownText = textarea.value;
+                const rawHTML = marked.parse(markdownText);
+                previewContent.innerHTML = rawHTML;
+                
+                // Structure standard HTML tree into structured sections for layout control
+                structureRenderedHTML(previewContent);
+                
+                // Apply code styling and copy buttons safely
+                previewContent.querySelectorAll('pre').forEach((pre) => {
+                    const code = pre.querySelector('code');
+                    if (code) {
+                        if (typeof hljs !== 'undefined') {
+                            try {
+                                hljs.highlightElement(code);
+                            } catch (e) {
+                                console.warn("hljs highlightElement failed: ", e);
+                            }
+                        }
+                        addCopyButtonToPre(pre, code);
+                    }
+                });
+            } catch (err) {
+                console.error("Markdown parsing failed: ", err);
+            }
+        }
+
+        function addCopyButtonToPre(pre, code) {
+            // Check if wrapper already exists
+            let wrapper = pre.parentNode;
+            if (wrapper.classList.contains('code-block-wrapper')) {
+                if (wrapper.querySelector('.code-copy-btn')) return;
+            } else {
+                wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper';
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+            }
+            
+            const btn = document.createElement('button');
+            btn.className = 'code-copy-btn';
+            btn.setAttribute('aria-label', 'Copy code to clipboard');
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg><span>Copy</span>`;
+            
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                copyTextToClipboard(code.textContent).then(() => {
+                    btn.classList.add('copied');
+                    btn.querySelector('span').textContent = 'Copied!';
+                    btn.querySelector('svg').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />`;
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.querySelector('span').textContent = 'Copy';
+                        btn.querySelector('svg').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />`;
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Failed to copy code block: ', err);
+                });
+            });
+            wrapper.appendChild(btn);
+        }
+
+        // Moves raw parsed tags under parent structure wrapper class="section" grouping them by H2 tags
+        function structureRenderedHTML(container) {
+            const children = Array.from(container.children);
+            container.innerHTML = '';
+            
+            let header = document.createElement('header');
+            header.className = 'bio-header';
+            container.appendChild(header);
+            
+            let currentSection = null;
+            
+            for (let child of children) {
+                if (child.tagName === 'H2') {
+                    currentSection = document.createElement('section');
+                    currentSection.className = 'section';
+                    
+                    // Create web-safe slug anchor
+                    const slug = child.textContent.toLowerCase().replace(/[^\w]+/g, '-');
+                    currentSection.id = `section-${slug}`;
+                    
+                    container.appendChild(currentSection);
+                    currentSection.appendChild(child);
+                } else {
+                    if (currentSection) {
+                        currentSection.appendChild(child);
+                    } else {
+                        header.appendChild(child);
+                    }
+                }
+            }
+            
+            // Clean empty header elements
+            if (header.children.length === 0) {
+                header.remove();
+            }
+        }
+
+        /* ==========================================================================
+           SECTION MANAGER SUB-SYSTEM (PARSER & STATE CONSTRUCTORS)
+           ========================================================================== */
+        // Splits Markdown into Header Intro segment + Array of items beginning with '## '
+        function parseMarkdownSections(markdownText) {
+            const lines = markdownText.split('\n');
+            let introLines = [];
+            let sections = [];
+            let currentSection = null;
+            let inCodeBlock = false;
+
+            for (let line of lines) {
+                if (line.trim().startsWith('```')) {
+                    inCodeBlock = !inCodeBlock;
+                }
+
+                if (!inCodeBlock && line.startsWith('## ')) {
+                    const heading = line.substring(3).trim();
+                    currentSection = { heading, contentLines: [] };
+                    sections.push(currentSection);
+                } else {
+                    if (currentSection) {
+                        currentSection.contentLines.push(line);
+                    } else {
+                        introLines.push(line);
+                    }
+                }
+            }
+
+            return {
+                intro: introLines.join('\n'),
+                sections: sections.map(s => ({
+                    heading: s.heading,
+                    content: s.contentLines.join('\n')
+                }))
+            };
+        }
+
+        // Compiles intro back with sections blocks array
+        function compileMarkdown(intro, sections) {
+            let result = intro.trimEnd();
+            for (let s of sections) {
+                result += '\n\n## ' + s.heading + '\n' + s.content.trimEnd();
+            }
+            return result + '\n';
+        }
+
+        // Builds draggable chips into panel view
+        function renderSectionManager() {
+            const markdownText = textarea.value;
+            const parsed = parseMarkdownSections(markdownText);
+            const sections = parsed.sections;
+            const sidebarList = document.getElementById('section-manager-list');
+            
+            if (sections.length === 0) {
+                sidebarList.innerHTML = `<div style="color: var(--ui-text-muted); font-size: 0.75rem; padding: 1rem 0.5rem; text-align: center;">No sections found. Headings formatted with <strong>## Section</strong> will list here.</div>`;
+                return;
+            }
+            
+            sidebarList.innerHTML = '';
+            
+            sections.forEach((s, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'section-chip';
+                chip.draggable = true;
+                chip.setAttribute('data-index', index);
+                
+                chip.innerHTML = `
+                    <div class="chip-drag-handle" title="Drag to reorder">⋮⋮</div>
+                    <div class="chip-content">
+                        <span class="chip-title" title="Double click to rename, click to jump to">${escapeHtml(s.heading)}</span>
+                        <input type="text" class="chip-input" value="${escapeHtml(s.heading)}" style="display: none;">
+                    </div>
+                    <div class="chip-actions">
+                        <button class="chip-btn rename-btn" title="Rename inline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                        </button>
+                        <button class="chip-btn delete-btn" title="Delete section">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                `;
+
+                // Wire drag/drop
+                chip.addEventListener('dragstart', handleDragStart);
+                chip.addEventListener('dragover', handleDragOver);
+                chip.addEventListener('dragleave', handleDragLeave);
+                chip.addEventListener('drop', handleDrop);
+                chip.addEventListener('dragend', handleDragEnd);
+
+                const titleSpan = chip.querySelector('.chip-title');
+                const renameInput = chip.querySelector('.chip-input');
+                const renameBtn = chip.querySelector('.rename-btn');
+                const deleteBtn = chip.querySelector('.delete-btn');
+                const chipActions = chip.querySelector('.chip-actions');
+                const dragIcon = chip.querySelector('.chip-drag-handle');
+
+                // Jump to section click
+                titleSpan.addEventListener('click', () => {
+                    scrollToSection(index);
+                });
+
+                // Renaming workflow
+                const editMode = () => {
+                    titleSpan.style.display = 'none';
+                    renameInput.style.display = 'block';
+                    chipActions.style.display = 'none';
+                    dragIcon.style.visibility = 'hidden';
+                    chip.draggable = false;
+                    renameInput.focus();
+                    renameInput.select();
+                };
+
+                const saveEdit = () => {
+                    const newValue = renameInput.value.trim();
+                    if (newValue && newValue !== s.heading) {
+                        renameSection(index, newValue);
+                    } else {
+                        cancelEdit();
+                    }
+                };
+
+                const cancelEdit = () => {
+                    renameInput.value = s.heading;
+                    titleSpan.style.display = 'block';
+                    renameInput.style.display = 'none';
+                    chipActions.removeAttribute('style');
+                    dragIcon.style.visibility = 'visible';
+                    chip.draggable = true;
+                };
+
+                renameBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    editMode();
+                });
+
+                titleSpan.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    editMode();
+                });
+
+                renameInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') saveEdit();
+                    else if (e.key === 'Escape') cancelEdit();
+                });
+
+                renameInput.addEventListener('blur', saveEdit);
+
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteSection(index);
+                });
+
+                sidebarList.appendChild(chip);
+            });
+        }
+
+        // Scrolls Markdown editor to line matching section title
+        function scrollToSection(index) {
+            const markdown = textarea.value;
+            const parsed = parseMarkdownSections(markdown);
+            const heading = parsed.sections[index].heading;
+            
+            const anchor = `## ${heading}`;
+            const targetPos = markdown.indexOf(anchor);
+            
+            if (targetPos !== -1) {
+                textarea.focus();
+                textarea.setSelectionRange(targetPos, targetPos + anchor.length);
+                
+                // Calculate approximate pixel scroll position
+                const linesBefore = markdown.substring(0, targetPos).split('\n').length;
+                const style = window.getComputedStyle(textarea);
+                const lineHeight = parseFloat(style.lineHeight) || 22;
+                textarea.scrollTop = (linesBefore - 2) * lineHeight;
+            }
+        }
+
+        function renameSection(index, newHeading) {
+            const markdown = textarea.value;
+            const parsed = parseMarkdownSections(markdown);
+            
+            if (parsed.sections[index]) {
+                parsed.sections[index].heading = newHeading;
+                textarea.value = compileMarkdown(parsed.intro, parsed.sections);
+                
+                // Triggers preview live compilation & debounced save
+                textarea.dispatchEvent(new Event('input'));
+                renderSectionManager();
+            }
+        }
+
+        function deleteSection(index) {
+            const markdown = textarea.value;
+            const parsed = parseMarkdownSections(markdown);
+            const sectionName = parsed.sections[index].heading;
+            
+            if (confirm(`Delete the section "## ${sectionName}" and all of its contents?`)) {
+                parsed.sections.splice(index, 1);
+                textarea.value = compileMarkdown(parsed.intro, parsed.sections);
+                
+                textarea.dispatchEvent(new Event('input'));
+                renderSectionManager();
+            }
+        }
+
+        /* HTML Drag and drop implementations for reordering list logic */
+        function handleDragStart(e) {
+            dragSourceIndex = parseInt(this.getAttribute('data-index'));
+            e.dataTransfer.effectAllowed = 'move';
+            this.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            this.classList.add('drag-over');
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            this.classList.remove('drag-over');
+            const targetIndex = parseInt(this.getAttribute('data-index'));
+            
+            if (dragSourceIndex !== null && dragSourceIndex !== targetIndex) {
+                const markdown = textarea.value;
+                const parsed = parseMarkdownSections(markdown);
+                const sections = parsed.sections;
+                
+                // splice item out and insert at target
+                const [moved] = sections.splice(dragSourceIndex, 1);
+                sections.splice(targetIndex, 0, moved);
+                
+                textarea.value = compileMarkdown(parsed.intro, sections);
+                textarea.dispatchEvent(new Event('input'));
+                renderSectionManager();
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.section-chip').forEach(c => c.classList.remove('drag-over'));
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        /* ==========================================================================
+           TOOLBAR SMART INSERT HELPERS
+           ========================================================================== */
+        function insertToolbarHelper(type) {
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            const textVal = textarea.value;
+            const selection = textVal.substring(startPos, endPos);
+            
+            let beforeText = '';
+            let afterText = '';
+            let placeholder = '';
+            let ignoreSelection = false;
+
+            switch(type) {
+                case 'section':
+                    beforeText = "\n\n## ";
+                    afterText = "\nSection content here...\n";
+                    placeholder = "Section Title";
+                    break;
+                case 'table':
+                    beforeText = "\n\n";
+                    afterText = "\n";
+                    placeholder = "| Column 1 | Column 2 | Column 3 |\n|---|---|---|\n| Item A | Item B | Item C |\n| Item D | Item E | Item F |";
+                    ignoreSelection = true;
+                    break;
+                case 'image':
+                    beforeText = "![";
+                    afterText = "](https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80)";
+                    placeholder = "alt text";
+                    break;
+                case 'link':
+                    beforeText = "[";
+                    afterText = "](https://example.com)";
+                    placeholder = "Link Text";
+                    break;
+                case 'code':
+                    beforeText = "\n\n```javascript\n";
+                    afterText = "\n```\n";
+                    placeholder = "// insert script here";
+                    break;
+                case 'quote':
+                    beforeText = "\n\n> ";
+                    afterText = "\n";
+                    placeholder = "Blockquote text here";
+                    break;
+                case 'divider':
+                    beforeText = "\n\n---\n\n";
+                    afterText = "";
+                    placeholder = "";
+                    ignoreSelection = true;
+                    break;
+                case 'badge':
+                    beforeText = '<span class="badge">';
+                    afterText = '</span>';
+                    placeholder = "Label";
+                    break;
+                case 'bold':
+                    beforeText = "**";
+                    afterText = "**";
+                    placeholder = "bold text";
+                    break;
+                case 'italic':
+                    beforeText = "_";
+                    afterText = "_";
+                    placeholder = "italic text";
+                    break;
+            }
+
+            let insertString = selection;
+            if (ignoreSelection || selection.length === 0) {
+                insertString = placeholder;
+            }
+
+            const outputText = beforeText + insertString + afterText;
+            
+            // Try to use execCommand to preserve browser Undo history (Ctrl+Z)
+            let success = false;
+            try {
+                textarea.focus();
+                textarea.setSelectionRange(startPos, endPos);
+                success = document.execCommand('insertText', false, outputText);
+            } catch (err) {
+                console.warn('execCommand failed, falling back to manual inject', err);
+            }
+
+            if (!success) {
+                textarea.value = textVal.substring(0, startPos) + outputText + textVal.substring(endPos);
+                textarea.dispatchEvent(new Event('input'));
+            }
+            
+            textarea.focus();
+            if (ignoreSelection || selection.length === 0) {
+                if (placeholder.length > 0) {
+                    const newSelStart = startPos + beforeText.length;
+                    const newSelEnd = newSelStart + placeholder.length;
+                    textarea.setSelectionRange(newSelStart, newSelEnd);
+                } else {
+                    const finalPos = startPos + outputText.length;
+                    textarea.setSelectionRange(finalPos, finalPos);
+                }
+            } else {
+                const finalPos = startPos + outputText.length;
+                textarea.setSelectionRange(finalPos, finalPos);
+            }
+        }
+
+        /* ==========================================================================
+           CSS EDITOR (LIVE INJECTION & LINE NUMBERS SYNC)
+           ========================================================================== */
+        function updateInjectedCSS() {
+            styleTag.textContent = cssTextarea.value;
+        }
+
+        function updateLineNumbers() {
+            const lines = cssTextarea.value.split('\n');
+            const count = Math.max(1, lines.length);
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                html += `<div>${i}</div>`;
+            }
+            lineNumbers.innerHTML = html;
+        }
+
+        // Sync lines scroll when editor scrolls
+        cssTextarea.addEventListener('scroll', () => {
+            lineNumbers.scrollTop = cssTextarea.scrollTop;
+        });
+
+        // CSS Preset Insert selector click
+        cssSnippetSelector.addEventListener('change', () => {
+            const val = cssSnippetSelector.value;
+            if (!val) return;
+
+            let snippetCode = '';
+            switch(val) {
+                case 'dark-mode':
+                    snippetCode = `/* Media Query Dark Mode Override */
+@media (prefers-color-scheme: dark) {
+  body {
+    --bg-color: #0f131a;
+    --text-color: #f0f3f6;
+    --heading-color: #ffffff;
+    --border-color: #21262d;
+    --card-bg: #161b22;
+  }
+}`;
+                    break;
+                case 'accent-color':
+                    snippetCode = `/* Accent Color Override */
+:root {
+  --accent-color: #8b5cf6; /* Lilac / Violet */
+  --accent-rgb: 139, 92, 246;
+}`;
+                    break;
+                case 'custom-font':
+                    snippetCode = `/* Google Font Imports & Typography Reset */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Montserrat:wght@400;600&display=swap');
+:root {
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Montserrat', sans-serif;
+}`;
+                    break;
+                case 'centered-layout':
+                    snippetCode = `/* Centered Narrow Layout */
+.bio-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}`;
+                    break;
+                case 'card-sections':
+                    snippetCode = `/* Card Box Style Sections */
+.section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2.25rem;
+  margin-bottom: 2.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}`;
+                    break;
+                case 'colorful-badges':
+                    snippetCode = `/* Beautiful Gradient Inline Badges */
+.badge {
+  background: linear-gradient(135deg, var(--accent-color), #4f46e5);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border: none;
+}`;
+                    break;
+                case 'spoiler-text':
+                    snippetCode = `.spoiler {
+  position: relative;
+  display: inline-block;
+}
+
+.spoiler::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  border-radius: 3px;
+  transition: opacity 0.15s ease;
+}
+
+.spoiler:hover::after {
+  opacity: 0;
+}`;
+                    break;
+            }
+
+            if (snippetCode) {
+                cssTextarea.focus();
+                
+                let success = false;
+                if (snippetCode.startsWith('@import')) {
+                    // Prepend at the very top (spec requirement for @import)
+                    try {
+                        cssTextarea.setSelectionRange(0, 0);
+                        success = document.execCommand('insertText', false, snippetCode + '\n\n');
+                    } catch (e) {
+                        console.warn(e);
+                    }
+                    if (!success) {
+                        cssTextarea.value = snippetCode + '\n\n' + cssTextarea.value;
+                        cssTextarea.dispatchEvent(new Event('input'));
+                    }
+                    cssTextarea.setSelectionRange(0, 0);
+                    cssTextarea.scrollTop = 0;
+                } else {
+                    // Append at the bottom
+                    const currentText = cssTextarea.value;
+                    const spaces = currentText.length > 0 ? '\n\n' : '';
+                    const end = cssTextarea.value.length;
+                    try {
+                        cssTextarea.setSelectionRange(end, end);
+                        success = document.execCommand('insertText', false, spaces + snippetCode);
+                    } catch (e) {
+                        console.warn(e);
+                    }
+                    if (!success) {
+                        cssTextarea.value = currentText + spaces + snippetCode;
+                        cssTextarea.dispatchEvent(new Event('input'));
+                    }
+                    const newEnd = cssTextarea.value.length;
+                    cssTextarea.setSelectionRange(newEnd, newEnd);
+                    cssTextarea.scrollTop = cssTextarea.scrollHeight;
+                }
+                
+                // Reset select index
+                cssSnippetSelector.value = '';
+            }
+        });
+
+        // Reset CSS btn click
+        resetCssBtn.addEventListener('click', () => {
+            if (confirm("Reset custom CSS styles back to empty defaults?")) {
+                cssTextarea.value = defaultCssComment;
+                cssTextarea.dispatchEvent(new Event('input'));
+            }
+        });
+
+        /* ==========================================================================
+           PERSISTENCE (LOCAL STORAGE AUTO-SAVE & LOAD ON START)
+           ========================================================================== */
+        function saveToLocalStorage() {
+            localStorage.setItem('bio-markdown', textarea.value);
+            localStorage.setItem('bio-css', cssTextarea.value);
+            localStorage.setItem('bio-theme', themeSwitcher.value);
+            localStorage.setItem('bio-sidebar-collapsed', sectionSidebar.classList.contains('collapsed') ? 'true' : 'false');
+        }
+
+        function showToast(msg = "Saved ✓") {
+            const toast = document.getElementById('toast');
+            toast.querySelector('.toast-text').textContent = msg;
+            toast.classList.add('show');
+            
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1200);
+        }
+
+        // Triggers debounced save & instant update of relevant panels
+        textarea.addEventListener('input', () => {
+            updatePreview();
+            renderSectionManager();
+            
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                saveToLocalStorage();
+                showToast("Saved ✓");
+            }, 500);
+        });
+
+        cssTextarea.addEventListener('input', () => {
+            updateInjectedCSS();
+            updateLineNumbers();
+            
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                saveToLocalStorage();
+                showToast("Saved ✓");
+            }, 500);
+        });
+
+        // ── Custom Theme ──────────────────────────────────────────────────
+        const customThemeBar     = document.getElementById('custom-theme-bar');
+        const customBgColor      = document.getElementById('custom-bg-color');
+        const customTextColor    = document.getElementById('custom-text-color');
+        const customHeadingColor = document.getElementById('custom-heading-color');
+        const customAccentColor  = document.getElementById('custom-accent-color');
+        const customCardBg       = document.getElementById('custom-card-bg');
+        const resetCustomBtn     = document.getElementById('reset-custom-theme-btn');
+
+        const CUSTOM_DEFAULTS = {
+            bg: '#fdfdfb', text: '#2e2e2c', heading: '#121211', accent: '#3d5a45', card: '#ffffff'
+        };
+
+        function applyCustomThemeVars() {
+            const bg      = customBgColor.value;
+            const text    = customTextColor.value;
+            const heading = customHeadingColor.value;
+            const accent  = customAccentColor.value;
+            const card    = customCardBg.value;
+            // Parse accent hex → rgb for --accent-rgb
+            const r = parseInt(accent.slice(1,3),16);
+            const g = parseInt(accent.slice(3,5),16);
+            const b = parseInt(accent.slice(5,7),16);
+            document.body.style.setProperty('--bg-color',      bg);
+            document.body.style.setProperty('--bg-texture',    'none');
+            document.body.style.setProperty('--text-color',    text);
+            document.body.style.setProperty('--heading-color', heading);
+            document.body.style.setProperty('--accent-color',  accent);
+            document.body.style.setProperty('--accent-rgb',    `${r}, ${g}, ${b}`);
+            document.body.style.setProperty('--card-bg',       card);
+            document.body.style.setProperty('--border-color',  bg === '#ffffff' ? '#e5e5da' : adjustColor(bg, -15));
+        }
+
+        function adjustColor(hex, amount) {
+            // Slightly darken/lighten a hex color for border
+            let r = Math.min(255, Math.max(0, parseInt(hex.slice(1,3),16) + amount));
+            let g = Math.min(255, Math.max(0, parseInt(hex.slice(3,5),16) + amount));
+            let b = Math.min(255, Math.max(0, parseInt(hex.slice(5,7),16) + amount));
+            return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+        }
+
+        function clearCustomThemeVars() {
+            ['--bg-color','--bg-texture','--text-color','--heading-color',
+             '--accent-color','--accent-rgb','--card-bg','--border-color']
+            .forEach(v => document.body.style.removeProperty(v));
+        }
+
+        function toggleCustomBar(show) {
+            customThemeBar.classList.toggle('visible', show);
+        }
+
+        function saveCustomColors() {
+            localStorage.setItem('bio-custom-colors', JSON.stringify({
+                bg:      customBgColor.value,
+                text:    customTextColor.value,
+                heading: customHeadingColor.value,
+                accent:  customAccentColor.value,
+                card:    customCardBg.value
+            }));
+        }
+
+        function loadCustomColors() {
+            const saved = localStorage.getItem('bio-custom-colors');
+            if (saved) {
+                try {
+                    const c = JSON.parse(saved);
+                    customBgColor.value      = c.bg      || CUSTOM_DEFAULTS.bg;
+                    customTextColor.value    = c.text    || CUSTOM_DEFAULTS.text;
+                    customHeadingColor.value = c.heading || CUSTOM_DEFAULTS.heading;
+                    customAccentColor.value  = c.accent  || CUSTOM_DEFAULTS.accent;
+                    customCardBg.value       = c.card    || CUSTOM_DEFAULTS.card;
+                } catch(e) {}
+            }
+        }
+
+        [customBgColor, customTextColor, customHeadingColor, customAccentColor, customCardBg]
+            .forEach(input => input.addEventListener('input', () => {
+                applyCustomThemeVars();
+                saveCustomColors();
+                saveToLocalStorage();
+            }));
+
+        resetCustomBtn.addEventListener('click', () => {
+            customBgColor.value      = CUSTOM_DEFAULTS.bg;
+            customTextColor.value    = CUSTOM_DEFAULTS.text;
+            customHeadingColor.value = CUSTOM_DEFAULTS.heading;
+            customAccentColor.value  = CUSTOM_DEFAULTS.accent;
+            customCardBg.value       = CUSTOM_DEFAULTS.card;
+            applyCustomThemeVars();
+            saveCustomColors();
+            saveToLocalStorage();
+            showToast("Custom colors reset");
+        });
+
+        // Theme Switch
+        themeSwitcher.addEventListener('change', () => {
+            const val = themeSwitcher.value;
+            document.body.setAttribute('data-theme', val);
+            if (val === 'custom') {
+                loadCustomColors();
+                applyCustomThemeVars();
+                toggleCustomBar(true);
+            } else {
+                clearCustomThemeVars();
+                toggleCustomBar(false);
+            }
+            saveToLocalStorage();
+            showToast("Theme applied");
+        });
+
+        function loadSavedState() {
+            const storedMd = localStorage.getItem('bio-markdown');
+            const storedCss = localStorage.getItem('bio-css');
+            const storedTheme = localStorage.getItem('bio-theme');
+            const storedSidebar = localStorage.getItem('bio-sidebar-collapsed');
+
+            textarea.value = (storedMd !== null) ? storedMd : defaultMarkdownTemplate;
+            cssTextarea.value = (storedCss !== null) ? storedCss : defaultCssComment;
+            
+            if (storedTheme) {
+                themeSwitcher.value = storedTheme;
+                document.body.setAttribute('data-theme', storedTheme);
+                if (storedTheme === 'custom') {
+                    loadCustomColors();
+                    applyCustomThemeVars();
+                    toggleCustomBar(true);
+                }
+            } else {
+                themeSwitcher.value = 'default';
+                document.body.setAttribute('data-theme', 'default');
+            }
+
+            if (storedSidebar === 'true') {
+                sectionSidebar.classList.add('collapsed');
+            } else {
+                sectionSidebar.classList.remove('collapsed');
+            }
+
+            // sync components
+            updatePreview();
+            renderSectionManager();
+            updateInjectedCSS();
+            updateLineNumbers();
+        }
+
+        /* ==========================================================================
+           EXPORT AND IMPORT ACTUATIONS
+           ========================================================================== */
+        // Download raw text content helper
+        function triggerDownload(content, name, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = name;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 1. Download Markdown
+        document.getElementById('export-md-btn').addEventListener('click', () => {
+            triggerDownload(textarea.value, 'my-bio.md', 'text/markdown');
+            showToast("Downloaded Markdown ✓");
+        });
+
+        // 2. Download Static Beautiful Standalone HTML
+        document.getElementById('export-html-btn').addEventListener('click', () => {
+            const mdText = textarea.value;
+            const customCSS = cssTextarea.value;
+            const activeTheme = themeSwitcher.value;
+            
+            // Build bio DOM
+            const rawHtml = marked.parse(mdText);
+            const container = document.createElement('div');
+            container.innerHTML = rawHtml;
+            structureRenderedHTML(container);
+            const structuredHTML = container.innerHTML;
+
+            const nameMatch = mdText.match(/^#\s+(.+)$/m);
+            const bioTitle = nameMatch ? nameMatch[1] : 'Personal Biography';
+
+            // Fully bundled offline static webpage
+            const standaloneCode = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${bioTitle}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300..900;1,300..900&family=Fira+Code:wght@300..700&family=Fredoka:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Quicksand:wght@300..700&family=Space+Grotesk:wght@300..700&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    <!-- Code Highlight theme link -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+    <style>
+        /* Base Themes Style variables */
+        :root {
+            --bg-color: #fdfdfb;
+            --bg-texture: radial-gradient(#e2e2d9 1.5px, transparent 1.5px);
+            --bg-size: 24px 24px;
+            --text-color: #2e2e2c;
+            --heading-color: #121211;
+            --accent-color: #3d5a45;
+            --accent-rgb: 61, 90, 69;
+            --border-color: #e5e5da;
+            --card-bg: #ffffff;
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Lora', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        :where([data-theme="dark-terminal"]) {
+            --bg-color: #0d0f14;
+            --bg-texture: radial-gradient(#1f2937 1px, transparent 1px);
+            --bg-size: 24px 24px;
+            --text-color: #34d399;
+            --heading-color: #10b981;
+            --accent-color: #059669;
+            --accent-rgb: 5, 150, 105;
+            --border-color: #064e3b;
+            --card-bg: #111827;
+            --font-heading: 'Fira Code', monospace;
+            --font-body: 'Fira Code', monospace;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        :where([data-theme="warm-paper"]) {
+            --bg-color: #faf5ed;
+            --bg-texture: linear-gradient(rgba(224, 212, 191, 0.4) 1px, transparent 1px);
+            --bg-size: 100% 28px;
+            --text-color: #443224;
+            --heading-color: #2b1f1a;
+            --accent-color: #c84b31;
+            --accent-rgb: 200, 75, 49;
+            --border-color: #e3d2bd;
+            --card-bg: #fcfaf7;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Crimson Pro', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        :where([data-theme="bold-editorial"]) {
+            --bg-color: #ffffff;
+            --bg-texture: linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            --bg-size: 40px 100%;
+            --text-color: #111111;
+            --heading-color: #000000;
+            --accent-color: #f43f5e;
+            --accent-rgb: 244, 63, 94;
+            --border-color: #000000;
+            --card-bg: #ffffff;
+            --font-heading: 'Syne', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        :where([data-theme="soft-pastel"]) {
+            --bg-color: #faf6fc;
+            --bg-texture: radial-gradient(circle, #ecdff7 15%, transparent 16%);
+            --bg-size: 20px 20px;
+            --text-color: #4a3e56;
+            --heading-color: #2a1b35;
+            --accent-color: #9f5fbf;
+            --accent-rgb: 159, 95, 191;
+            --border-color: #ebd7f5;
+            --card-bg: #ffffff;
+            --font-heading: 'Fredoka', sans-serif;
+            --font-body: 'Quicksand', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        /* Typography spacing & scales inside Bio */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            background-image: var(--bg-texture);
+            background-size: var(--bg-size);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            line-height: 1.7;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .bio-container {
+            max-width: 720px;
+            width: 100%;
+            padding: 4rem 2rem;
+            box-sizing: border-box;
+        }
+
+        .bio-content h1, 
+        .bio-content h2, 
+        .bio-content h3, 
+        .bio-content h4 {
+            font-family: var(--font-heading);
+            color: var(--heading-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        .bio-content h1 { font-size: 2.75rem; margin-top: 0; margin-bottom: 0.5rem; }
+        .bio-content h2 { font-size: 1.85rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 3rem; }
+        .bio-content h3 { font-size: 1.4rem; }
+        .bio-content h4 { font-size: 1.15rem; }
+
+        .bio-content a {
+            color: var(--accent-color);
+            text-decoration: none;
+            border-bottom: 1.5px solid rgba(var(--accent-rgb), 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .bio-content a:hover {
+            border-bottom-color: var(--accent-color);
+            background: rgba(var(--accent-rgb), 0.05);
+        }
+
+        .bio-content hr {
+            border: 0;
+            height: 1px;
+            background: var(--border-color);
+            margin: 2.5rem 0;
+        }
+
+        .bio-content blockquote {
+            border-left: 4px solid var(--accent-color);
+            padding: 0.25rem 0 0.25rem 1.25rem;
+            margin: 1.5rem 0;
+            color: var(--text-color);
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .bio-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .bio-content th, 
+        .bio-content td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+
+        .bio-content th {
+            background-color: rgba(var(--accent-rgb), 0.04);
+            font-weight: 600;
+        }
+
+        .code-block-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .bio-content pre {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            user-select: none;
+            line-height: 1;
+            z-index: 10;
+        }
+
+        .code-block-wrapper:hover .code-copy-btn {
+            opacity: 0.85;
+        }
+
+        .code-copy-btn:hover {
+            opacity: 1 !important;
+            background: var(--border-color);
+        }
+
+        .code-copy-btn.copied {
+            background: rgba(var(--accent-rgb), 0.1);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .bio-content code {
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            background: rgba(var(--accent-rgb), 0.08);
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
+        }
+
+        .bio-content pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85rem;
+        }
+
+        .bio-content ul, 
+        .bio-content ol {
+            padding-left: 1.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .bio-content li {
+            margin-bottom: 0.6rem;
+        }
+
+        .bio-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .badge {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.825rem;
+            font-family: var(--font-mono);
+            display: inline-block;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+
+        /* User custom live CSS injection */
+        ${customCSS}
+    </style>
+</head>
+<body data-theme="${activeTheme}">
+    <div class="bio-container">
+        <article class="bio-content">
+            ${structuredHTML}
+        </article>
+    </div>
+    
+    <!-- Code highlighting initialization -->
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"><\/script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fallback copy functionality
+            function copyTextToClipboard(text) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    return navigator.clipboard.writeText(text);
+                }
+                return new Promise((resolve, reject) => {
+                    try {
+                        const el = document.createElement('textarea');
+                        el.value = text;
+                        el.style.position = 'fixed';
+                        el.style.opacity = '0';
+                        document.body.appendChild(el);
+                        el.select();
+                        const success = document.execCommand('copy');
+                        document.body.removeChild(el);
+                        if (success) resolve();
+                        else reject(new Error('Fallback copy failed'));
+                    } catch (err) {
+                        reject(err);
+                    }
+                });
+            }
+
+            document.querySelectorAll('pre').forEach((pre) => {
+                const code = pre.querySelector('code');
+                if (code) {
+                    if (typeof hljs !== 'undefined') {
+                        try {
+                            hljs.highlightElement(code);
+                        } catch (e) {
+                            console.warn("hljs highlightElement failed: ", e);
+                        }
+                    }
+                    addCopyButtonToPre(pre, code);
+                }
+            });
+
+            function addCopyButtonToPre(pre, code) {
+                let wrapper = pre.parentNode;
+                if (wrapper.classList.contains('code-block-wrapper')) {
+                    if (wrapper.querySelector('.code-copy-btn')) return;
+                } else {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'code-block-wrapper';
+                    pre.parentNode.insertBefore(wrapper, pre);
+                    wrapper.appendChild(pre);
+                }
+                const btn = document.createElement('button');
+                btn.className = 'code-copy-btn';
+                btn.setAttribute('aria-label', 'Copy code to clipboard');
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg><span>Copy</span>';
+                
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    copyTextToClipboard(code.textContent).then(() => {
+                        btn.classList.add('copied');
+                        btn.querySelector('span').textContent = 'Copied!';
+                        btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />';
+                        setTimeout(() => {
+                            btn.classList.remove('copied');
+                            btn.querySelector('span').textContent = 'Copy';
+                            btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />';
+                        }, 1500);
+                    });
+                });
+                wrapper.appendChild(btn);
+            }
+        });
+    <\/script>
+</body>
+</html>`;
+
+            triggerDownload(standaloneCode, 'index.html', 'text/html');
+            showToast("Downloaded Pure Bio HTML ✓");
+        });
+
+        // 3. Copy Markdown clipboard
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            copyTextToClipboard(textarea.value).then(() => {
+                showToast("Copied to Clipboard ✓");
+            }).catch(err => {
+                console.error("Clipboard copy failed: ", err);
+                alert("Failed to copy markdown text.");
+            });
+        });
+
+        // 4. Import Markdown file
+        const importBtn = document.getElementById('import-btn');
+        const importInput = document.getElementById('import-input');
+
+        importBtn.addEventListener('click', () => {
+            importInput.click();
+        });
+
+        importInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                textarea.value = evt.target.result;
+                textarea.dispatchEvent(new Event('input'));
+                showToast("Markdown Loaded");
+            };
+            reader.readAsText(file);
+            importInput.value = ''; // clears element selection
+        });
+
+        /* ==========================================================================
+           VIEW / EDIT DYNAMIC TOGGLING
+           ========================================================================== */
+        modeToggleBtn.addEventListener('click', () => {
+            const isView = appContainer.classList.contains('mode-view');
+            
+            if (isView) {
+                // Switch into Edit panel mode
+                appContainer.classList.remove('mode-view');
+                appContainer.classList.add('mode-edit');
+                modeToggleBtn.querySelector('.mode-toggle-icon').innerHTML = eyeIcon;
+                modeToggleBtn.querySelector('.mode-toggle-text').textContent = 'View Bio';
+                
+                // Scroll layout size alignments
+                updateLineNumbers();
+            } else {
+                // Switch into Pure Bio View mode
+                appContainer.classList.remove('mode-edit');
+                appContainer.classList.add('mode-view');
+                modeToggleBtn.querySelector('.mode-toggle-icon').innerHTML = pencilIcon;
+                modeToggleBtn.querySelector('.mode-toggle-text').textContent = 'Edit Bio';
+            }
+        });
+
+        /* ==========================================================================
+           DRAWER SENSORY TRIGGERS (COLLAPSIBLE SIDEBAR ACTIONS)
+           ========================================================================== */
+        function toggleSidebar() {
+            sectionSidebar.classList.toggle('collapsed');
+            saveToLocalStorage();
+        }
+
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        sidebarCloseBtn.addEventListener('click', toggleSidebar);
+
+        /* ==========================================================================
+           RUN-TIME SETUP INITIALIZATION
+           ========================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedState();
+        });
+    </script>
+</body>
+</html>
