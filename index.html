@@ -872,29 +872,115 @@
            7. MEDIA QUERIES (MOBILE RESPONSIVE STACKING)
            ========================================================================== */
         @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 0.75rem;
+                padding: 0.75rem 1rem;
+                align-items: stretch;
+            }
+
+            .logo-tag {
+                display: none; /* Hide the tag on mobile to save space */
+            }
+
+            .app-controls {
+                display: flex;
+                width: 100%;
+                gap: 0.4rem;
+                justify-content: space-between;
+            }
+
+            .app-controls .btn,
+            .app-controls .theme-dropdown {
+                flex: 1;
+                min-width: 0;
+                justify-content: center;
+                padding: 0.45rem 0.35rem;
+                font-size: 0.75rem;
+            }
+
+            .app-controls .toolbar-divider {
+                display: none; /* Hide the vertical line divider on mobile */
+            }
+
             .workspace {
                 flex-direction: column;
+                position: relative;
             }
 
-            .editor-panel {
+            /* Single Panel View on Mobile to avoid virtual keyboard overlapping */
+            .app-container.mode-edit .editor-panel {
+                display: flex;
                 width: 100% !important;
-                height: 50%;
-                border-right: none;
-                border-bottom: 1px solid var(--ui-border);
-                transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+                height: 100%;
             }
 
-            .preview-panel {
-                height: 50%;
+            .app-container.mode-edit .preview-panel {
+                display: none !important;
             }
 
             .app-container.mode-view .editor-panel {
-                height: 0% !important;
-                opacity: 0;
+                display: none !important;
             }
 
             .app-container.mode-view .preview-panel {
+                display: flex;
+                width: 100% !important;
                 height: 100%;
+            }
+
+            /* Overlay Floating Sidebar Drawer for Section Manager on Mobile */
+            .section-sidebar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 1000;
+                width: 260px !important;
+                background: var(--ui-panel-bg);
+                border-right: 1px solid var(--ui-border);
+                box-shadow: 10px 0 25px rgba(0, 0, 0, 0.5);
+                transform: translateX(0);
+                transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            }
+
+            .section-sidebar.collapsed {
+                width: 260px !important;
+                transform: translateX(-100%);
+                border-right: none;
+                box-shadow: none;
+            }
+
+            /* Scrollable Custom Theme Swatches */
+            #custom-theme-bar {
+                padding: 0.5rem 1rem;
+                gap: 0.75rem;
+                flex-wrap: nowrap !important;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                justify-content: flex-start;
+            }
+
+            #custom-theme-bar::-webkit-scrollbar {
+                display: none;
+            }
+
+            #custom-theme-bar span {
+                display: none; /* Hide label to save horizontal width */
+            }
+
+            .custom-picker-group {
+                flex-shrink: 0;
+            }
+
+            .custom-picker-divider {
+                flex-shrink: 0;
+                margin: 0;
+            }
+
+            #reset-custom-theme-btn {
+                flex-shrink: 0;
             }
 
             /* Scrollable mobile toolbar */
@@ -903,14 +989,11 @@
                 white-space: nowrap;
                 flex-wrap: nowrap;
                 scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
             }
 
             .editor-toolbar::-webkit-scrollbar {
                 display: none;
-            }
-
-            .app-controls {
-                gap: 0.4rem;
             }
 
             .btn span {
@@ -918,8 +1001,8 @@
             }
 
             .theme-dropdown {
-                padding: 0.45rem 0.45rem;
-                max-width: 110px;
+                padding: 0.45rem;
+                max-width: none;
                 font-size: 0.75rem;
             }
 
@@ -927,10 +1010,60 @@
                 bottom: 1rem;
                 left: 1rem;
             }
+
             .mode-toggle-pill {
                 right: 1rem;
                 left: auto;
                 padding: 0.5rem 1rem;
+            }
+
+            /* CSS Snippets Controls Panel on Mobile */
+            .css-controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .css-select-wrapper {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .css-preset-dropdown {
+                flex: 1;
+                max-width: none;
+            }
+
+            #reset-css-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Mobile Reader spacing and viewport optimization */
+            .bio-container {
+                padding: 2rem 1.25rem;
+            }
+
+            .bio-content h1 {
+                font-size: 2rem;
+            }
+
+            .bio-content h2 {
+                font-size: 1.50rem;
+            }
+
+            /* Responsive tables within articles */
+            .bio-content table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Display code block copy buttons persistently on touch devices */
+            .code-copy-btn {
+                opacity: 0.8;
             }
         }
     </style>
