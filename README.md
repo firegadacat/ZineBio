@@ -1,9 +1,9 @@
 # ZineBio ✍️
 > A zero-setup Markdown-driven personal bio builder that runs entirely in your browser.
 
-Write in Markdown. Style with live CSS. Publish in one click — all in a **single HTML file**, no backend, no build step.
+Write in Markdown. Style with live CSS. Script with live JS. Publish in one click — all in a **single HTML file**, no backend, no build step.
 
-![ZineBio Preview](https://img.shields.io/badge/version-1.0.0-brightgreen?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square) ![No dependencies](https://img.shields.io/badge/dependencies-none-orange?style=flat-square)
+![ZineBio Preview](https://img.shields.io/badge/version-1.1.0-brightgreen?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square) ![No dependencies](https://img.shields.io/badge/dependencies-none-orange?style=flat-square)
 
 ---
 
@@ -13,12 +13,15 @@ Write in Markdown. Style with live CSS. Publish in one click — all in a **sing
 - 🎨 **5 built-in themes** — Default Light, Dark Terminal, Warm Paper, Bold Editorial, Soft Pastel
 - 🖌️ **Custom theme builder** — pick your own background, text, heading, accent, and card colors with a color picker
 - 💅 **Live CSS editor** — write and apply your own custom CSS on the fly
-- 📦 **CSS Snippet library** — one-click presets for dark mode, badges, spoiler text, card sections, and more
-- 🗂️ **Section Manager** — drag-and-drop sidebar to reorder your bio sections
+- ⚡ **Live JS editor** — write custom scripts (e.g. for analytics, custom widgets, or interactive tags) that run inside a safe sandbox in the live preview panel and bundle directly into your export
+- 📦 **CSS Snippet library** — one-click presets for dark mode overrides, custom fonts, badges, spoiler text, card sections, and more
+- 🗂️ **Section Manager** — drag-and-drop sidebar chip lists to reorder your bio sections
+- 📱 **Mobile Responsive layout** — responsive headers, side-scrolling custom swatches, touch-optimized toolbars, table layout overflow control, and floating overlay drawer managers that adjust flawlessly on phone displays
+- 🔒 **Keyboard-Safe Edit Panels** — editors scale to 100% viewport heights on mobile to avoid virtual keyboard overlapping and screen squishing
 - 💾 **Auto-save** — everything saved to `localStorage`, survives refresh
-- 📤 **Export** — export a clean standalone HTML bio page, or save/load `.md` files
+- 📤 **Export** — export a clean standalone static HTML bio page, or save/load raw `.md` files
 - ⌨️ **Toolbar shortcuts** — quick-insert buttons for bold, italic, links, images, code blocks, tables, badges, and more
-- 🔍 **Syntax highlighting** — code blocks powered by highlight.js
+- 🔍 **Theme-Aware Syntax highlighting** — code block highlights inherit colors based on the active theme (e.g. Dracula aesthetic on Terminal, Earthy forest tones on Warm Paper) powered by highlight.js
 - 📴 **Works offline** — after first load, CDN assets are cached
 
 ---
@@ -48,28 +51,30 @@ Or just [download the HTML file](./index.html) directly and open it in any moder
 2. See the **live preview** update on the right instantly
 3. Switch themes using the **theme dropdown** in the top bar
 4. Customize colors with **🎨 Custom...** theme option
-5. Open the **CSS tab** to write your own styles or insert snippets
+5. Open the **CSS** and **JS** tabs to write custom code or apply snippets
 
 ### View Mode
-- Click the **View** pill button (bottom right) to toggle to a clean, fullscreen view of your bio
+- Click the **View Bio** pill button (bottom right) to toggle to a clean, fullscreen view of your bio
 
 ### Export
-- **Export HTML** — generates a standalone, self-contained bio page (no editor, just the beautiful bio)
+- **Export HTML** — generates a standalone, self-contained HTML bio page (no editor, just the beautiful bio + custom CSS + sanitized JS bundle)
 - **Export .md** — saves your raw Markdown file
 - **Import .md** — load an existing Markdown file
 
 ---
 
-## 🎨 Themes
+## 🎨 Themes & Syntax Highlights
 
-| Theme | Description |
-|---|---|
-| ✨ Default Light | Clean minimal light theme with dot texture |
-| 📟 Dark Terminal | Dark green-on-black terminal aesthetic |
-| 📜 Warm Paper | Warm parchment with ruled lines |
-| 📰 Bold Editorial | High-contrast editorial with vibrant rose accent |
-| 🌸 Soft Pastel | Soft lilac and purple pastels |
-| 🎨 Custom... | Full color picker — make it yours |
+ZineBio features full code block syntax highlights designed to match the palette of each theme:
+
+| Theme | Colors | Syntax Palette |
+|---|---|---|
+| ✨ Default Light | Light paper & dots | Clean github-light (reds, dark blues, slate greys) |
+| 📟 Dark Terminal | Emerald & pitch black | Neon cyberpunk (pinks, bright yellows, cyan, purple) |
+| 📜 Warm Paper | Ruled warm parchment | Earthy forest (warm reds, leaf greens, warm greys) |
+| 📰 Bold Editorial | High-contrast grid | High impact (roses, deep teal, purple, slate) |
+| 🌸 Soft Pastel | Lilac circles & pastels | Muted soft pastels (sky blues, violets, soft fuchsias) |
+| 🎨 Custom... | Fully customizable | Inherited style |
 
 ---
 
@@ -103,7 +108,7 @@ ZineBio supports standard Markdown plus some handy extras via HTML classes:
 
 ## 🗂️ Section Manager
 
-The left sidebar lists all your `##` headings as draggable section cards.  
+The sidebar drawer lists all your `##` headings as draggable section cards.  
 Drag them to reorder — the Markdown updates automatically.
 
 ---
@@ -134,4 +139,4 @@ MIT — do whatever you want with it. Credit appreciated but not required. 🙂
 
 ---
 
-<p align="center">Made with ☕ and too much CSS</p>
+<p align="center">Made with ☕ and too much CSS & JS</p>
