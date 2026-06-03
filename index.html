@@ -831,6 +831,136 @@
             font-weight: 500;
         }
 
+        /* Responsive Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Glassmorphic Link Cards */
+        .link-card {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            text-decoration: none !important;
+            color: var(--text-color) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s, background-color 0.22s, border-color 0.22s;
+            gap: 1rem;
+            cursor: pointer;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .link-card:hover {
+            transform: translateY(-2.5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+            background: rgba(var(--accent-rgb), 0.05);
+            border-color: var(--accent-color) !important;
+        }
+
+        /* Icon Box inside card */
+        .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: rgba(var(--accent-rgb), 0.1);
+            border-radius: 8px;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            flex-shrink: 0;
+        }
+
+        /* Info texts inside card */
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 0;
+        }
+        .card-title {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--heading-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+        .card-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.15rem;
+        }
+
+        /* Trailing arrow transition */
+        .card-arrow {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .link-card:hover .card-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Wide Widget layout with Call-to-Action Button */
+        .link-card.widget-card {
+            cursor: default;
+        }
+        .link-card.widget-card:hover {
+            transform: none;
+            box-shadow: none;
+            background: var(--card-bg);
+            border-color: var(--border-color) !important;
+        }
+        .widget-btn {
+            background: var(--accent-color);
+            color: var(--bg-color) !important;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.825rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            text-decoration: none !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-left: auto;
+            border-bottom: none !important;
+        }
+        .widget-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            background: var(--accent-color);
+        }
+
+        @media (max-width: 600px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* ==========================================================================
            5. SYSTEM PERSISTENT PILLS & TOASTS
            ========================================================================== */
@@ -1299,6 +1429,8 @@
                             <button class="toolbar-btn" onclick="insertToolbarHelper('table')" title="Insert 3-column, 3-row Markdown table">+ Table</button>
                             <button class="toolbar-btn" onclick="insertToolbarHelper('image')" title="Insert Image">+ Image</button>
                             <button class="toolbar-btn" onclick="insertToolbarHelper('link')" title="Insert Link">+ Link</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('link-grid')" title="Insert responsive side-by-side cards grid">+ Grid Cards</button>
+                            <button class="toolbar-btn" onclick="insertToolbarHelper('widget')" title="Insert call-to-action widget card">+ Widget Card</button>
                             <button class="toolbar-btn" onclick="insertToolbarHelper('code')" title="Insert Block code syntax">+ Code Block</button>
                             <button class="toolbar-btn" onclick="insertToolbarHelper('quote')" title="Insert Blockquote">+ Quote</button>
                             <button class="toolbar-btn" onclick="insertToolbarHelper('divider')" title="Insert Divider HR">+ Divider</button>
@@ -1349,6 +1481,7 @@
                                     <option value="card-sections">📦 Card-style sections (with hover shadows)</option>
                                     <option value="colorful-badges">🏷️ Sleek gradient pill badges</option>
                                     <option value="spoiler-text">🫣 Spoiler text (hover to reveal)</option>
+                                    <option value="card-custom">🎴 Translucent Frosted Glass Card styles</option>
                                 </select>
                             </div>
                             <button class="btn" id="reset-css-btn" title="Restore CSS editor to default selectors list" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
@@ -2006,6 +2139,43 @@ Updated: May 2026
                     afterText = "](https://example.com)";
                     placeholder = "Link Text";
                     break;
+                case 'link-grid':
+                    beforeText = "\n\n";
+                    afterText = "\n";
+                    placeholder = `<div class="grid-2">
+  <a href="https://github.com" class="link-card" target="_blank">
+    <div class="card-icon">🐙</div>
+    <div class="card-info">
+      <div class="card-title">GitHub Profile</div>
+      <div class="card-subtitle">github.com/username</div>
+    </div>
+    <div class="card-arrow">→</div>
+  </a>
+
+  <a href="https://x.com" class="link-card" target="_blank">
+    <div class="card-icon">🐦</div>
+    <div class="card-info">
+      <div class="card-title">Twitter / X</div>
+      <div class="card-subtitle">x.com/username</div>
+    </div>
+    <div class="card-arrow">→</div>
+  </a>
+</div>`;
+                    ignoreSelection = true;
+                    break;
+                case 'widget':
+                    beforeText = "\n\n";
+                    afterText = "\n";
+                    placeholder = `<div class="link-card widget-card">
+  <div class="card-icon">💬</div>
+  <div class="card-info">
+    <div class="card-title">Join Our Discord Community</div>
+    <div class="card-subtitle">🟢 120 Online • 🟣 450 Members</div>
+  </div>
+  <a href="https://discord.gg/invite" class="widget-btn" target="_blank">Join Server →</a>
+</div>`;
+                    ignoreSelection = true;
+                    break;
                 case 'code':
                     beforeText = "\n\n```javascript\n";
                     afterText = "\n```\n";
@@ -2223,6 +2393,19 @@ Updated: May 2026
 
 .spoiler:hover::after {
   opacity: 0;
+}`;
+                    break;
+                case 'card-custom':
+                    snippetCode = `/* Frosted Glass / Translucent Link Cards customization */
+.link-card {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+.link-card:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
 }`;
                     break;
             }
@@ -2846,6 +3029,136 @@ Updated: May 2026
             display: inline-block;
             vertical-align: middle;
             font-weight: 500;
+        }
+
+        /* Responsive Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Glassmorphic Link Cards */
+        .link-card {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            text-decoration: none !important;
+            color: var(--text-color) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s, background-color 0.22s, border-color 0.22s;
+            gap: 1rem;
+            cursor: pointer;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .link-card:hover {
+            transform: translateY(-2.5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+            background: rgba(var(--accent-rgb), 0.05);
+            border-color: var(--accent-color) !important;
+        }
+
+        /* Icon Box inside card */
+        .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: rgba(var(--accent-rgb), 0.1);
+            border-radius: 8px;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            flex-shrink: 0;
+        }
+
+        /* Info texts inside card */
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 0;
+        }
+        .card-title {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--heading-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+        .card-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.15rem;
+        }
+
+        /* Trailing arrow transition */
+        .card-arrow {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .link-card:hover .card-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Wide Widget layout with Call-to-Action Button */
+        .link-card.widget-card {
+            cursor: default;
+        }
+        .link-card.widget-card:hover {
+            transform: none;
+            box-shadow: none;
+            background: var(--card-bg);
+            border-color: var(--border-color) !important;
+        }
+        .widget-btn {
+            background: var(--accent-color);
+            color: var(--bg-color) !important;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.825rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            text-decoration: none !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-left: auto;
+            border-bottom: none !important;
+        }
+        .widget-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            background: var(--accent-color);
+        }
+
+        @media (max-width: 600px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* User custom live CSS injection */

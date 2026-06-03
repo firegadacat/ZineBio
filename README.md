@@ -14,13 +14,14 @@ Write in Markdown. Style with live CSS. Script with live JS. Publish in one clic
 - 🖌️ **Custom theme builder** — pick your own background, text, heading, accent, and card colors with a color picker
 - 💅 **Live CSS editor** — write and apply your own custom CSS on the fly
 - ⚡ **Live JS editor** — write custom scripts (e.g. for analytics, custom widgets, or interactive tags) that run inside a safe sandbox in the live preview panel and bundle directly into your export
-- 📦 **CSS Snippet library** — one-click presets for dark mode overrides, custom fonts, badges, spoiler text, card sections, and more
+- 🎴 **Interactive Card Grids** — divide your page sections into side-by-side grids of link cards (`.grid-2`, `.grid-3`, `.link-card`) that responsively stack on mobile screens
+- 📦 **CSS Snippet library** — one-click presets for dark mode overrides, custom fonts, badges, spoiler text, card sections, frosted glass cards, and more
 - 🗂️ **Section Manager** — drag-and-drop sidebar chip lists to reorder your bio sections
 - 📱 **Mobile Responsive layout** — responsive headers, side-scrolling custom swatches, touch-optimized toolbars, table layout overflow control, and floating overlay drawer managers that adjust flawlessly on phone displays
 - 🔒 **Keyboard-Safe Edit Panels** — editors scale to 100% viewport heights on mobile to avoid virtual keyboard overlapping and screen squishing
 - 💾 **Auto-save** — everything saved to `localStorage`, survives refresh
 - 📤 **Export** — export a clean standalone static HTML bio page, or save/load raw `.md` files
-- ⌨️ **Toolbar shortcuts** — quick-insert buttons for bold, italic, links, images, code blocks, tables, badges, and more
+- ⌨️ **Toolbar shortcuts** — quick-insert buttons for bold, italic, links, images, code blocks, tables, badges, grids, widgets, and more
 - 🔍 **Theme-Aware Syntax highlighting** — code block highlights inherit colors based on the active theme (e.g. Dracula aesthetic on Terminal, Earthy forest tones on Warm Paper) powered by highlight.js
 - 📴 **Works offline** — after first load, CDN assets are cached
 
@@ -89,6 +90,7 @@ Click the **CSS Snippets** dropdown in the CSS tab to instantly insert:
 - 📦 **Card-style sections** — box sections with hover shadows
 - 🏷️ **Sleek gradient pill badges** — style `.badge` elements
 - 🫣 **Spoiler text** — hover-to-reveal hidden text
+- 🎴 **Translucent Frosted glass card styles** — custom transparent background and backdrop blurring for cards
 
 ---
 
@@ -102,6 +104,37 @@ ZineBio supports standard Markdown plus some handy extras via HTML classes:
 
 <!-- Spoiler (hover to reveal) -->
 <span class="spoiler">Hidden text here</span>
+
+<!-- Side-by-side cards (2-column layout) -->
+<div class="grid-2">
+  <a href="https://github.com" class="link-card" target="_blank">
+    <div class="card-icon">🐙</div>
+    <div class="card-info">
+      <div class="card-title">GitHub Profile</div>
+      <div class="card-subtitle">github.com/username</div>
+    </div>
+    <div class="card-arrow">→</div>
+  </a>
+
+  <a href="https://x.com" class="link-card" target="_blank">
+    <div class="card-icon">🐦</div>
+    <div class="card-info">
+      <div class="card-title">Twitter / X</div>
+      <div class="card-subtitle">x.com/username</div>
+    </div>
+    <div class="card-arrow">→</div>
+  </a>
+</div>
+
+<!-- Full-width Call-to-action widget card -->
+<div class="link-card widget-card">
+  <div class="card-icon">💬</div>
+  <div class="card-info">
+    <div class="card-title">Join Our Discord Community</div>
+    <div class="card-subtitle">🟢 120 Online • 🟣 450 Members</div>
+  </div>
+  <a href="https://discord.gg/invite" class="widget-btn" target="_blank">Join Server →</a>
+</div>
 ```
 
 ---
